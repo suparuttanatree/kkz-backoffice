@@ -11,22 +11,26 @@
         <thead>
           <tr class="head_table">
             <th class="text-left head_table">ลำดับ</th>
+            <th class="text-left head_table">รูปภาพ</th>
             <th class="text-left head_table">ชื่อ</th>
-            <th class="text-left head_table">เบอร์มือถือ</th>
-            <th class="text-left head_table">อีเมล</th>
-            <th class="text-left head_table">ชื่อผู้ใช้</th>
+            <th class="text-left head_table">รายละเอียด</th>
             <th class="text-center head_table action_column">จัดการ</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in admin_list" :key="index">
+          <tr
+            v-for="(item, index) in highlight_list"
+            :key="index"
+            class="text_to_top"
+          >
             <td>{{ index + 1 }}</td>
-            <td>{{ item.admin_name }}</td>
-            <td>{{ item.admin_tel }}</td>
-            <td>{{ item.admin_email }}</td>
-            <td>{{ item.admin_username }}</td>
             <td>
-              <v-row align="center" justify="space-around">
+              <img width="80px" :src="item.highlight_img" alt="" />
+            </td>
+            <td>{{ item.highlight_name }}</td>
+            <td>{{ item.highlight_detail }}</td>
+            <td>
+              <v-row class="mt-4" align="center" justify="space-around">
                 <v-btn small color="success" @click="edit_admin(item)">
                   <v-icon left> mdi-pencil </v-icon>
                   แก้ไข
@@ -44,42 +48,46 @@
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
-          <v-card-title>
-            <span class="headline">ผู้ดูแลระบบ</span>
-          </v-card-title>
           <v-card-text>
             <v-container>
+              <v-row justify="center">
+                <v-avatar
+                  style="cursor: pointer"
+                  color="indigo"
+                  size="120"
+                  @click="launchFilePicker()"
+                >
+                  <img v-bind:src="dialog_data.highlight_img" />
+                </v-avatar>
+                <input
+                  type="file"
+                  ref="file"
+                  @change="onFileChange($event.target)"
+                  style="display: none"
+                />
+              </v-row>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field label="ชื่อ" v-model="dialog_data.admin_name"></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="เบอร์ติดต่อ" v-model="dialog_data.admin_tel"></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="อีเมล" v-model="dialog_data.admin_email"></v-text-field>
-                </v-col>
-                <v-col cols="12">
                   <v-text-field
-                    label="ชื่อผู้ใช้งาน(ใช้ในการเข้าสู่ระบบ)"
-                   v-model="dialog_data.admin_username"
+                    label="ชื่อ"
+                    v-model="dialog_data.highlight_name"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field
-                    label="รหัสผ่าน"
-                    type="password"
-                    v-model="dialog_data.admin_password"
-                  ></v-text-field>
+                  <v-container fluid>
+                    <v-textarea
+                      label="รายละเอียด"
+                      rows="10"
+                      v-model="dialog_data.highlight_detail"
+                    ></v-textarea>
+                  </v-container>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel()">
-              ปิด
-            </v-btn>
+            <v-btn color="blue darken-1" text @click="cancel()"> ปิด </v-btn>
             <v-btn color="blue darken-1" text @click="confirm()">
               บันทึก
             </v-btn>
@@ -91,78 +99,148 @@
 </template>
 
 <script>
-import GetAdmin from "../api/Admin/GetAdmin";
+import GetHighlight from "../api/Common/GetHighlight";
+import UploadImage from "../api/Common/UploadImage";
+import AddHighlight from "../api/Common/AddHighlight";
+import EditHighlight from "../api/Common/EditHighlight";
+import DateleHighlight from "../api/Common/DeleteHighlight";
 export default {
   name: "Highlight",
   data() {
     return {
       dialog: false,
-      admin_list: [
-        {
-          admin_id:0,
-          admin_name: "Frozen Yogurt",
-          admin_tel: "0123456789",
-          admin_email: "Frozen Yogurt",
-          admin_username: "123",
-        },
-        {
-          admin_id:0,
-          admin_name: "Frozen Yogurt",
-          admin_tel: "0123456789",
-          admin_email: "Frozen Yogurt",
-          admin_username: "123",
-        },
-        {
-          admin_id:0,
-          admin_name: "Frozen Yogurt",
-          admin_tel: "0123456789",
-          admin_email: "Frozen Yogurt",
-          admin_username: "123",
-        },
-      ],
+      highlight_list: [],
       dialog_data: {
-        admin_id:0,
-        admin_name: null,
-        admin_tel: null,
-        admin_email: null,
-        admin_username: null,
+        highlight_id: 0,
+        highlight_name: null,
+        highlight_detail: null,
+        highlight_img: null,
       },
-      state:"add"
+      state: "add",
     };
   },
   created() {
-    this.GetAdminList();
+    this.get_highlight();
   },
   methods: {
-    GetAdminList() {
-      GetAdmin().then((res) => {
-        console.log(res.data);
+    get_highlight() {
+      GetHighlight().then((res) => {
+        let { Status: status, Data: data } = res.data;
+        if (status == 200) {
+          this.highlight_list = data;
+        }
       });
     },
     add_admin() {
       this.state = "add";
-      this.dialog = true;
+      (this.dialog_data = {
+        highlight_name: null,
+        highlight_detail: null,
+        highlight_img: null,
+      }),
+        (this.dialog = true);
     },
     edit_admin(item) {
       this.state = "edit";
-      this.dialog_data = item;
-      this.dialog = true;
+      (this.dialog_data = {
+        highlight_id: item.highlight_id,
+        highlight_name: item.highlight_name,
+        highlight_detail: item.highlight_detail,
+        highlight_img: item.highlight_img,
+      }),
+        (this.dialog = true);
     },
     delete_admin(item) {
       console.log(item);
+      let params = {
+        highlight_id: item.highlight_id,
+      };
+      DateleHighlight(params).then((res) => {
+        let { Status: status, Data: data } = res.data;
+        if (status == 200) {
+          console.log(data);
+          this.get_highlight();
+        }
+      });
     },
-    cancel(){
-      this.dialog_data = {}
-      this.dialog = false;
+    cancel() {
+      (this.dialog_data = {
+        highlight_name: null,
+        highlight_detail: null,
+        highlight_img: null,
+      }),
+        (this.dialog = false);
     },
-    confirm(){
+    confirm() {
       if (this.state == "edit") {
         console.log("edit");
-      }else{
+        let params = {
+          highlight_id: this.dialog_data.highlight_id,
+          highlight_name: this.dialog_data.highlight_name,
+          highlight_detail: this.dialog_data.highlight_detail,
+          highlight_img: this.dialog_data.highlight_img,
+        };
+        EditHighlight(params).then((res) => {
+          let { Status: status, Data: data } = res.data;
+          if (status == 200) {
+            console.log(data);
+            this.get_highlight();
+            this.dialog_data = {
+              highlight_name: null,
+              highlight_detail: null,
+              highlight_img: null,
+            };
+            this.dialog = false;
+          }
+        });
+      } else {
         console.log("add");
+        let params = {
+          highlight_name: this.dialog_data.highlight_name,
+          highlight_detail: this.dialog_data.highlight_detail,
+          highlight_img: this.dialog_data.highlight_img,
+        };
+        AddHighlight(params).then((res) => {
+          let { Status: status, Data: data } = res.data;
+          if (status == 200) {
+            console.log(data);
+            this.get_highlight();
+            this.dialog_data = {
+              highlight_name: null,
+              highlight_detail: null,
+              highlight_img: null,
+            };
+            this.dialog = false;
+          }
+        });
       }
-      this.dialog = false;
-    }
+    },
+    launchFilePicker() {
+      this.$refs.file.click();
+    },
+    async onFileChange(target) {
+      console.log(target.files[0]);
+      var reader = new FileReader();
+      reader.onloadend = (event) => {
+        let params = {
+          up_to: "common",
+          type: target.files[0].type,
+          img: event.target.result,
+        };
+        this.upload(params);
+      };
+      reader.readAsDataURL(target.files[0]);
+    },
+    upload(data) {
+      console.log(data);
+      UploadImage(data).then((res) => {
+        let { Status: status, Data: data } = res.data;
+        if (status == 200) {
+          console.log(data);
+          this.dialog_data.highlight_img = data.img_path;
+        }
+      });
+    },
   },
 };
 </script>
@@ -173,5 +251,8 @@ export default {
 }
 .action_column {
   width: 200px;
+}
+.text_to_top {
+  vertical-align: top;
 }
 </style>

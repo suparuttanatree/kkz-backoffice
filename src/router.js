@@ -12,15 +12,15 @@ export default new Router({
       component: () => import('@/views/dashboard/Index'),
       children: [
         // Dashboard
-        {
-          name: 'Dashboard',
-          path: '',
-          component: () => import('./pages/Dashboard.vue'),
-        },
+        // {
+        //   name: 'Dashboard',
+        //   path: '',
+        //   component: () => import('./pages/Dashboard.vue'),
+        // },
         // Pages
         {
           name: 'Admin',
-          path: '/admin',
+          path: '',
           component: () => import('./pages/Admin.vue'),
         },
         {

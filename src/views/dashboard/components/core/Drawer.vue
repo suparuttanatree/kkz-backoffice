@@ -23,7 +23,7 @@
         width="80"
       />
     </div>
-    <div class="text-center">
+    <div class="text-center pt-4">
       <span class="white--text">สวัสดีคุณ {{ admin_data.admin_name }}</span>
     </div>
 
@@ -43,6 +43,9 @@
       </template>
       <div />
     </v-list>
+    <template v-slot:append>
+      <v-row class="pa-4" justify="center"> <v-btn color="error" @click="logout()"> ออกจากระบบ </v-btn></v-row>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -64,15 +67,15 @@ export default {
       name: "สมหมาย",
     },
     items: [
-      {
-        icon: "mdi-view-dashboard",
-        title: "ภาพรวม",
-        to: "/",
-      },
+      // {
+      //   icon: "mdi-view-dashboard",
+      //   title: "ภาพรวม",
+      //   to: "/",
+      // },
       {
         icon: "mdi-account",
         title: "ข้อมูลผู้ดูแลระบบ",
-        to: "/admin",
+        to: "/",
       },
       {
         icon: "mdi-account-multiple",
@@ -97,10 +100,10 @@ export default {
     ],
   }),
   created() {
-    if (JSON.parse(localStorage.getItem('admin')) != null) {
-      this.admin_data = JSON.parse(localStorage.getItem('admin'));
-    }else{
-      this.$router.push('/signin')
+    if (JSON.parse(localStorage.getItem("admin")) != null) {
+      this.admin_data = JSON.parse(localStorage.getItem("admin"));
+    } else {
+      this.$router.push("/signin");
     }
   },
 
@@ -133,11 +136,15 @@ export default {
         title: this.$t(item.title),
       };
     },
+    logout(){
+      localStorage.clear();
+      this.$router.push("/signin");
+    }
   },
 };
 </script>
 <style>
-.logo_img{
+.logo_img {
   display: grid;
 }
 </style>

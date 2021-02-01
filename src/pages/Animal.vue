@@ -6,10 +6,22 @@
           <v-icon left> mdi-plus </v-icon>
           เพิ่ม
         </v-btn>
+        <div>
+          <v-select
+            style="width: 160"
+            class="mt-n4 mr-2"
+            @change="select_type($event)"
+            :items="animal_type"
+            item-text="ani_type_name"
+            item-value="ani_type_id"
+            label="ประเภท"
+            v-model="dialog_data.animal_typeid"
+          ></v-select>
+        </div>
       </v-row>
-      <v-simple-table>
+      <v-simple-table class="table">
         <thead>
-          <tr class="head_table">
+          <tr class="">
             <th class="text-left head_table">ลำดับ</th>
             <th class="text-left head_table">ชื่อ(ไทย)</th>
             <th class="text-left head_table">ชื่อ(อังกฤษ)</th>
@@ -20,18 +32,26 @@
             <th class="text-left head_table">ถิ่นอาศัย</th>
             <th class="text-left head_table">อาหาร</th>
             <th class="text-left head_table">พฤติกรรม</th>
-            <th class="text-left head_table">สถานภาพปัจจุบัน</th>
+            <th style="width: 80px" class="text-left head_table">
+              สถานภาพปัจจุบัน
+            </th>
             <th class="text-center head_table action_column">จัดการ</th>
           </tr>
         </thead>
-        
+
         <tbody>
-          <tr class="text_to_top" v-for="(item, index) in animalList" :key="index">
+          <tr
+            class="text_to_top"
+            v-for="(item, index) in animalList"
+            :key="index"
+          >
             <td>{{ index + 1 }}</td>
             <td>{{ item.animal_thainame }}</td>
             <td>{{ item.animal_engname }}</td>
             <td>{{ item.animal_sciencename }}</td>
-            <td>{{ item.animal_img }}</td>
+            <td>
+              <img width="80px" :src="item.animal_img" alt="" />
+            </td>
             <td>{{ item.animal_typename }}</td>
             <td>{{ item.animal_interest }}</td>
             <td>{{ item.animal_local }}</td>
@@ -53,36 +73,92 @@
           </tr>
         </tbody>
       </v-simple-table>
+      <div class="text-center pa-5">
+        <v-pagination
+          @input="page_change($event)"
+          v-model="page"
+          :length="total_page"
+        ></v-pagination>
+      </div>
     </v-card>
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
-          <v-card-title>
-            <span class="headline">ผู้ดูแลระบบ</span>
-          </v-card-title>
           <v-card-text>
             <v-container>
+              <v-row justify="center">
+                <v-avatar
+                  style="cursor: pointer"
+                  color="indigo"
+                  size="120"
+                  @click="launchFilePicker()"
+                >
+                  <img v-bind:src="dialog_data.animal_img" />
+                </v-avatar>
+                <input
+                  type="file"
+                  ref="file"
+                  @change="onFileChange($event.target)"
+                  style="display: none"
+                />
+              </v-row>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field label="ชื่อ" v-model="dialog_data.admin_name"></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="เบอร์ติดต่อ" v-model="dialog_data.admin_tel"></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="อีเมล" v-model="dialog_data.admin_email"></v-text-field>
-                </v-col>
-                <v-col cols="12">
                   <v-text-field
-                    label="ชื่อผู้ใช้งาน(ใช้ในการเข้าสู่ระบบ)"
-                   v-model="dialog_data.admin_username"
+                    label="ชื่อ(ภาษาไทย)"
+                    v-model="dialog_data.animal_thainame"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                    label="รหัสผ่าน"
-                    type="password"
-                    v-model="dialog_data.admin_password"
+                    label="ชื่อ(ภาษาอังกฤษ)"
+                    v-model="dialog_data.animal_engname"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="ชื่อ(วิทยาศาสตร์)"
+                    v-model="dialog_data.animal_sciencename"
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-select
+                    :items="animal_type"
+                    item-text="ani_type_name"
+                    item-value="ani_type_id"
+                    label="ประเภท"
+                    v-model="dialog_data.animal_typeid"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="สิ่งที่น่าสนใจ"
+                    v-model="dialog_data.animal_interestl"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="ถิ่นอาศัย"
+                    v-model="dialog_data.animal_local"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="อาหาร"
+                    v-model="dialog_data.animal_food"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="พฤติกรรม"
+                    v-model="dialog_data.animal_action"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="สถานภาพปัจจุบัน"
+                    v-model="dialog_data.animal_status"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -90,9 +166,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel()">
-              ปิด
-            </v-btn>
+            <v-btn color="blue darken-1" text @click="cancel()"> ปิด </v-btn>
             <v-btn color="blue darken-1" text @click="confirm()">
               บันทึก
             </v-btn>
@@ -105,39 +179,87 @@
 
 <script>
 // import GetAdmin from "../api/Admin/GetAdmin";
-import GetAnimals from "../api/Animals/GetAnimals"
+import GetAnimals from "../api/Animals/GetAnimals";
+import UploadImage from "../api/Common/UploadImage";
+import EditAnimal from "../api/Animals/EditAnimal";
+import GetAnimalType from "../api/Animals/GetAnimalType";
+import AddAnimal from "../api/Animals/AddAnimal";
+import DeleteAnimal from "../api/Animals/DeleteAnimal";
 export default {
   name: "Animals",
   data() {
     return {
+      type: null,
+      animal_type: [],
+      img_base64: "",
       dialog: false,
-      page:1,
+      page: 1,
+      total_page: 5,
       animalList: [],
       dialog_data: {
-        admin_id:0,
-        admin_name: null,
-        admin_tel: null,
-        admin_email: null,
-        admin_username: null,
+        animal_id: 0,
+        animal_thainame: null,
+        animal_engname: null,
+        animal_sciencename: null,
+        animal_img: null,
+        animal_typeid: null,
+        animal_interest: null,
+        animal_local: null,
+        animal_food: null,
+        animal_action: null,
+        animal_status: null,
       },
-      state:"add"
+      state: "add",
     };
   },
   created() {
-    let params ={
-      type:null,
-      page:1
-    }
+    let params = {
+      type: null,
+      page: 1,
+    };
     this.GetAnimalList(params);
+    this.GetType();
   },
   methods: {
+    page_change(e) {
+      console.log(e);
+      this.page = e;
+      let params = {
+        type: this.type,
+        page: e,
+      };
+      this.GetAnimalList(params);
+    },
+    select_type(e) {
+      this.type = e;
+      let params = {
+        type: e,
+        page: 1,
+      };
+      this.GetAnimalList(params);
+    },
+    GetType() {
+      GetAnimalType().then((res) => {
+        let { Status: status, Data: data } = res.data;
+        if (status == 200) {
+          console.log(data);
+          this.animal_type = data;
+          let nan = {
+            ani_type_id: null,
+            ani_type_name: "ไม่ระบุ",
+          };
+          this.animal_type = this.animal_type.concat(nan);
+        }
+      });
+    },
     GetAnimalList(params) {
       GetAnimals(params).then((res) => {
         let { Status: status, Data: data } = res.data;
-          if (status == 200) {
-            this.animalList = data.animals;
-            this.page = data.page
-          }
+        if (status == 200) {
+          this.animalList = data.animals;
+          this.page = Number(data.page);
+          this.total_page = Number(data.total_page);
+        }
       });
     },
     add_admin() {
@@ -146,24 +268,160 @@ export default {
     },
     edit_admin(item) {
       this.state = "edit";
-      this.dialog_data = item;
-      this.dialog = true;
+      (this.dialog_data = {
+        animal_id: item.animal_id,
+        animal_thainame: item.animal_thainame,
+        animal_engname: item.animal_engname,
+        animal_sciencename: item.animal_sciencename,
+        animal_img: item.animal_img,
+        animal_typeid: item.animal_typeid,
+        animal_interest: item.animal_interest,
+        animal_local: item.animal_local,
+        animal_food: item.animal_food,
+        animal_action: item.animal_action,
+        animal_status: item.animal_status,
+      }),
+        (this.dialog = true);
     },
     delete_admin(item) {
       console.log(item);
+      let params = {
+        animal_id: item.animal_id,
+      };
+      DeleteAnimal(params).then((res) => {
+        let { Status: status} = res.data;
+        if (status == 200) {
+          let params = {
+            type: this.type,
+            page: 1,
+          };
+          this.GetAnimalList(params);
+        }
+      });
     },
-    cancel(){
-      this.dialog_data = {}
+    cancel() {
+      this.dialog_data = {
+        animal_id: 0,
+        animal_thainame: null,
+        animal_engname: null,
+        animal_sciencename: null,
+        animal_img: null,
+        animal_typeid: null,
+        animal_interest: null,
+        animal_local: null,
+        animal_food: null,
+        animal_action: null,
+        animal_status: null,
+      };
       this.dialog = false;
     },
-    confirm(){
+    confirm() {
       if (this.state == "edit") {
         console.log("edit");
-      }else{
+        let params = {
+          animal_id: this.dialog_data.animal_id,
+          animal_thainame: this.dialog_data.animal_thainame,
+          animal_engname: this.dialog_data.animal_engname,
+          animal_sciencename: this.dialog_data.animal_sciencename,
+          animal_img: this.dialog_data.animal_img,
+          animal_typeid: this.dialog_data.animal_typeid,
+          animal_interest: this.dialog_data.animal_interest,
+          animal_local: this.dialog_data.animal_local,
+          animal_food: this.dialog_data.animal_food,
+          animal_action: this.dialog_data.animal_action,
+          animal_status: this.dialog_data.animal_status,
+        };
+        EditAnimal(params).then((res) => {
+          let { Status: status, Data: data } = res.data;
+          if (status == 200) {
+            console.log(data);
+            let params = {
+              type: null,
+              page: 1,
+            };
+            this.GetAnimalList(params);
+            this.dialog_data = {
+              animal_id: 0,
+              animal_thainame: null,
+              animal_engname: null,
+              animal_sciencename: null,
+              animal_img: null,
+              animal_typeid: null,
+              animal_interest: null,
+              animal_local: null,
+              animal_food: null,
+              animal_action: null,
+              animal_status: null,
+            };
+          }
+        });
+      } else {
         console.log("add");
+        let params = {
+          animal_thainame: this.dialog_data.animal_thainame,
+          animal_engname: this.dialog_data.animal_engname,
+          animal_sciencename: this.dialog_data.animal_sciencename,
+          animal_img: this.dialog_data.animal_img,
+          animal_typeid: this.dialog_data.animal_typeid,
+          animal_interest: this.dialog_data.animal_interest,
+          animal_local: this.dialog_data.animal_local,
+          animal_food: this.dialog_data.animal_food,
+          animal_action: this.dialog_data.animal_action,
+          animal_status: this.dialog_data.animal_status,
+        };
+        AddAnimal(params).then((res) => {
+          let { Status: status, Data: data } = res.data;
+          if (status == 200) {
+            console.log(data);
+            let params = {
+              type: null,
+              page: 1,
+            };
+            this.GetAnimalList(params);
+            this.dialog_data = {
+              animal_id: 0,
+              animal_thainame: null,
+              animal_engname: null,
+              animal_sciencename: null,
+              animal_img: null,
+              animal_typeid: null,
+              animal_interest: null,
+              animal_local: null,
+              animal_food: null,
+              animal_action: null,
+              animal_status: null,
+            };
+          }
+        });
       }
       this.dialog = false;
-    }
+    },
+    launchFilePicker() {
+      this.$refs.file.click();
+    },
+    async onFileChange(target) {
+      console.log(target.files[0]);
+      var reader = new FileReader();
+      reader.onloadend = (event) => {
+        let params = {
+          up_to: "animal",
+          type: target.files[0].type,
+          img: event.target.result,
+        };
+        this.upload(params);
+      };
+      reader.readAsDataURL(target.files[0]);
+    },
+    upload(data) {
+      console.log(data);
+      UploadImage(data).then((res) => {
+        let { Status: status, Data: data } = res.data;
+        if (status == 200) {
+          console.log(data);
+          this.dialog_data.animal_img = data.img_path;
+        }
+      });
+    },
   },
 };
 </script>
@@ -175,7 +433,12 @@ export default {
 .action_column {
   width: 200px;
 }
-.text_to_top{
+.text_to_top {
   vertical-align: top;
 }
+/* .table{
+    display:table;
+    width:100%;
+    table-layout:fixed;
+} */
 </style>

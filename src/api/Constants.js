@@ -17,3 +17,14 @@ export const USER_LOGIN = "Customer/Login"
 
 ///animals
 export const GET_ANIMALS = "Animal/GetAnimals";
+export const EDIT_ANIMAL = "Animal/EditAnimal";
+export const GET_ANIMALTYPE = "Animal/GetAnimalType"
+export const DELETE_ANIMAL = "Animal/DeleteAnimal"
+export const ADD_ANIMAL = "Animal/AddAnimal"
+
+///common
+export const UPLOAD_IMG = "Files/Upload"
+export const GET_HIGHLIGHT = "Highlight/GetHighlight"
+export const EDIT_HIGHLIGHT = "Highlight/EditHighlight"
+export const ADD_HIGHLIGHT = "Highlight/AddHighlight"
+export const DELETE_HIGHLIGHT = "Highlight/DeleteHighlight"

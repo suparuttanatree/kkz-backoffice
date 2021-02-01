@@ -11,6 +11,7 @@
         <thead>
           <tr class="head_table">
             <th class="text-left head_table">ลำดับ</th>
+            <th class="text-left head_table">รูปภาพ</th>
             <th class="text-left head_table">ชื่อ</th>
             <th class="text-left head_table">เบอร์มือถือ</th>
             <th class="text-left head_table">อีเมล</th>
@@ -21,6 +22,11 @@
         <tbody>
           <tr v-for="(item, index) in costumer_list" :key="index">
             <td>{{ index + 1 }}</td>
+            <td>
+              <v-avatar color="indigo" size="30">
+                <img v-bind:src="item.customer_img" />
+              </v-avatar>
+            </td>
             <td>{{ item.customer_name }}</td>
             <td>{{ item.customer_tel }}</td>
             <td>{{ item.customer_email }}</td>
@@ -136,24 +142,36 @@ export default {
     },
     edit_user(item) {
       this.state = "edit";
-      this.dialog_data = item;
+      this.dialog_data = {
+        customer_id: item.customer_id,
+        customer_name: item.customer_name,
+        customer_tel: item.customer_tel,
+        customer_email: item.customer_email,
+        customer_username: item.customer_username,
+      };
       this.dialog = true;
     },
     delete_user(item) {
       console.log(item);
       let params = {
-        id : item.customer_id
-      }
-      DeleteUser(params).then(res => {
+        id: item.customer_id,
+      };
+      DeleteUser(params).then((res) => {
         let { Status: status, Data: data } = res.data;
-          if (status == 200) {
-            console.log(data);
-            this.GetUserList();
-          }
-      })
+        if (status == 200) {
+          console.log(data);
+          this.GetUserList();
+        }
+      });
     },
     cancel() {
-      this.dialog_data = {};
+      this.dialog_data = {
+        customer_id: 0,
+        customer_name: null,
+        customer_tel: null,
+        customer_email: null,
+        customer_username: null,
+      };
       this.dialog = false;
     },
     confirm() {
@@ -172,7 +190,13 @@ export default {
           if (status == 200) {
             console.log(data);
             this.GetUserList();
-            this.dialog_data = {};
+            this.dialog_data = {
+              customer_id: 0,
+              customer_name: null,
+              customer_tel: null,
+              customer_email: null,
+              customer_username: null,
+            };
             this.dialog = false;
           }
         });
@@ -190,7 +214,13 @@ export default {
           if (status == 200) {
             console.log(data);
             this.GetUserList();
-            this.dialog_data = {};
+            this.dialog_data = {
+              customer_id: 0,
+              customer_name: null,
+              customer_tel: null,
+              customer_email: null,
+              customer_username: null,
+            };
             this.dialog = false;
           }
         });
