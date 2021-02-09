@@ -28,3 +28,7 @@ export const GET_HIGHLIGHT = "Highlight/GetHighlight"
 export const EDIT_HIGHLIGHT = "Highlight/EditHighlight"
 export const ADD_HIGHLIGHT = "Highlight/AddHighlight"
 export const DELETE_HIGHLIGHT = "Highlight/DeleteHighlight"
+
+///order
+export const GET_ORDER = "Order/GetOrder"
+export const CONFIRM_ORDER = "Order/GenQr"

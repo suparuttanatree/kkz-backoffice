@@ -97,6 +97,11 @@ export default {
         title: "ห้องพัก",
         to: "/rooms",
       },
+      {
+        icon: "mdi-office-building",
+        title: "การสั่งซื้อ",
+        to: "/orders",
+      },
     ],
   }),
   created() {

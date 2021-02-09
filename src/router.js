@@ -44,6 +44,11 @@ export default new Router({
           component: () => import('./pages/Rooms.vue'),
         },
         {
+          nama: 'Orders',
+          path: '/orders',
+          component: () => import('./pages/Orders.vue'),
+        },
+        {
           name: 'Notifications',
           path: 'components/notifications',
           component: () => import('@/views/dashboard/component/Notifications'),

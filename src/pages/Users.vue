@@ -148,6 +148,7 @@ export default {
         customer_tel: item.customer_tel,
         customer_email: item.customer_email,
         customer_username: item.customer_username,
+        customer_password: item.customer_password,
       };
       this.dialog = true;
     },
@@ -177,7 +178,7 @@ export default {
     confirm() {
       if (this.state == "edit") {
         console.log("edit");
-        let params = {
+        let params1 = {
           id: this.dialog_data.customer_id,
           name: this.dialog_data.customer_name,
           tel: this.dialog_data.customer_tel,
@@ -185,7 +186,7 @@ export default {
           email: this.dialog_data.customer_email,
           password: this.dialog_data.customer_password,
         };
-        EditUser(params).then((res) => {
+        EditUser(params1).then((res) => {
           let { Status: status, Data: data } = res.data;
           if (status == 200) {
             console.log(data);
