@@ -22,8 +22,9 @@
           <tr v-for="(item, index) in order_list" :key="index">
             <td>{{ index + 1 }}</td>
             <td>{{ item.order_id }}</td>
-            <td v-if="item.order_type == '0'">บัตรสวนน้ำ</td>
-            <td v-else-if="item.order_type == '1'">บัตรสวนสัตว์</td>
+            <td v-if="item.order_type == '0'">บัตรสวนสัตว์</td>
+            <td v-else-if="item.order_type == '1'">บัตรสวนน้ำ</td>
+            <td v-else-if="item.order_type == '2'">บัตรแมวน้ำ</td>
             <td v-else>บัตร</td>
             <td>{{ item.name }}</td>
             <td>{{ item.phone }}</td>
