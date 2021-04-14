@@ -32,6 +32,7 @@
             <th class="text-left head_table">ถิ่นอาศัย</th>
             <th class="text-left head_table">อาหาร</th>
             <th class="text-left head_table">พฤติกรรม</th>
+            <th class="text-left head_table">url</th>
             <th style="width: 80px" class="text-left head_table">
               สถานภาพปัจจุบัน
             </th>
@@ -57,6 +58,7 @@
             <td>{{ item.animal_local }}</td>
             <td>{{ item.animal_food }}</td>
             <td>{{ item.animal_action }}</td>
+            <td>{{ item.url }}</td>
             <td>{{ item.animal_status }}</td>
             <td>
               <v-row class="mt-4" justify="space-around">
@@ -161,6 +163,12 @@
                     v-model="dialog_data.animal_status"
                   ></v-text-field>
                 </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="url"
+                    v-model="dialog_data.url"
+                  ></v-text-field>
+                </v-col>
               </v-row>
             </v-container>
           </v-card-text>
@@ -208,6 +216,7 @@ export default {
         animal_food: null,
         animal_action: null,
         animal_status: null,
+        url:null
       },
       state: "add",
     };
@@ -280,6 +289,7 @@ export default {
         animal_food: item.animal_food,
         animal_action: item.animal_action,
         animal_status: item.animal_status,
+        url: item.url
       }),
         (this.dialog = true);
     },
@@ -330,6 +340,7 @@ export default {
           animal_food: this.dialog_data.animal_food,
           animal_action: this.dialog_data.animal_action,
           animal_status: this.dialog_data.animal_status,
+          url:this.dialog_data.url
         };
         EditAnimal(params).then((res) => {
           let { Status: status, Data: data } = res.data;
